@@ -1,4 +1,5 @@
 import socket, json
+
 def server(host = 'localhost', port=8082):
     data_payload = 2048 #The maximum amount of data to be received at once
     # Create a TCP socket
@@ -14,15 +15,30 @@ def server(host = 'localhost', port=8082):
     i = 0
     list = []
     while True: 
-        
+
         print ("Aguardando para receber mensagem do cliente")
+        
         client, address = sock.accept() 
+        
         data = client.recv(data_payload)
         String = ''
         if data:
-            print(data.decode())
-            if(data.decode('UTF-8') == '2'):
-                print("Bem vindo Funcionario")         
+            print(data.decode('utf-8'))
+            if data.decode("UTF-8") == "lista":
+                print("Bem vindo cliente")
+                print(list[0])
+                dados = ' - '.join(list)
+                print(dados)   
+                client.send(dados.encode('utf-8'))
+
+            elif 'posicao-' in data.decode("UTF-8"):
+                print("Você quer dar lance no produto tal" +data.decode('utf-8'))
+            else:
+                dados_dict = json.loads(data.decode('UTF-8'))
+            
+                print(dados_dict)
+                
+                print("Produto cadastrado com sucesso!")
                 list.append(data.decode('UTF-8'))
                 print ("Data: %s" %data.decode('UTF-8'))
                 client.send(data)
@@ -30,15 +46,6 @@ def server(host = 'localhost', port=8082):
                 # end connection
                 client.close()
                 i+=1
-                if i>=3: break                  
+                if i>=3: break
 
-            else:   
-                print("Bem vindo Cliente")
-                for item in list:
-                    String = String + str(item) + "Δ"
-                client.send((String).encode())    
-                print(String)
-                client.close()    
-                i+=1
-                if i>=3: break     
 server()

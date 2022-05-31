@@ -1,3 +1,4 @@
+from math import prod
 import socket, json
 
 from Produto import Produto
@@ -12,23 +13,35 @@ def client(host = 'localhost', port=8082):
     sock.connect(server_address) 
     # Send data 
     try: 
-         
-        # Send data 
-        TipoCliente = input("Digite o tipo de usuario que você quer entrar? \n Digite: \n 1 - Cliente\n 2 - Vendedor")
-
-        if(TipoCliente == '2'):
-               ProdutoNome = input("Digite o nome do Produto: ")
-               ProdutoValor = input("Digite o valor inicial: ")
-               print ("Nome %s" % ProdutoNome) 
-               print ("Valor %s" % ProdutoNome) 
-               data = json.dumps({"nome": ProdutoNome, "valor": ProdutoValor})
-               sock.send(data.encode('utf-8'))
-               
-        sock.send(TipoCliente.encode('utf-8'))
-
+        info = True
+        while info:
+            user = input("Digite \n lista - Para ver lista de produtos \n sair - Para Sair")
+            # Send data 
+            if user == "lista":
+                sock.send(user.encode('utf-8'))
+                info = False
+            elif user == "sair":
+                exit()
+            else:
+                info = True
         # Look for the response 
+        data = sock.recv(2000)
+        lista = data.decode('UTF-8').split('-')
+        print ("Recebida %s" % data.decode('UTF-8')) 
+        count = 0
+        for item in lista:
+            count += 1
+            print(count,' - ', item)
+        produto = input("Digite a posição do produto que queira da um lance: ")
+        ps = "posicao- "+produto
+        sock.send(ps.encode('utf-8'))
+
         amount_received = 0 
-        amount_expected = len(TipoCliente) 
+        amount_expected = len(user) 
+        while amount_received < amount_expected: 
+            
+            amount_received += len(data) 
+            print ("Recebida %s" % data.decode('UTF-8')) 
 
     except socket.error as e: 
         print ("Socket error: %s" %str(e)) 

@@ -1,6 +1,5 @@
 import socket, json
 
-from Produto import Produto
 
 
 def client(host = 'localhost', port=8082): 
@@ -16,20 +15,18 @@ def client(host = 'localhost', port=8082):
         ProdutoNome = input("Digite o nome do Produto: ")
         ProdutoValor = input("Digite o valor inicial: ")
         print ("Nome %s" % ProdutoNome) 
-        data = json.dumps({"nome": ProdutoNome, "valor": ProdutoValor})
         print ("Valor %s" % ProdutoNome) 
-
+        data = json.dumps({"nome": ProdutoNome, "valor": ProdutoValor})
         print(data)
         sock.send(data.encode('utf-8'))
 
-        
         # Look for the response 
         amount_received = 0 
         amount_expected = len(ProdutoNome) 
         while amount_received < amount_expected: 
-            data = sock.recv(16) 
+            data = sock.recv(2000) 
             amount_received += len(data) 
-            print ("Recebida %s" % data) 
+            print ("Recebida %s" % data.decode('UTF-8')) 
     except socket.error as e: 
         print ("Socket error: %s" %str(e)) 
     except Exception as e: 
